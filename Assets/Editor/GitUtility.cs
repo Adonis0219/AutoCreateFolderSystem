@@ -1,13 +1,14 @@
 // Process 클래스 사용을 위해 추가
 using System.Diagnostics;
+using System.Text;
 using UnityEngine;
 
 public static class GitUtility
 {
     /// <summary>
-    /// 
+    /// 현재 Git 브랜치 이름을 반환합니다.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>현재 Git 브랜치명</returns>
     public static string GetCurrentBranchName()
     {
         try
@@ -23,7 +24,10 @@ public static class GitUtility
                 // 창을 표시하지 않도록 설정
                 CreateNoWindow = true,
                 // Git 명령어가 실행될 디렉토리 설정 -> 프로젝트 폴더에서 실행
-                WorkingDirectory = Application.dataPath 
+                WorkingDirectory = Application.dataPath,
+
+                // --- 한글 처리를 위한 인코딩 설정 추가 ---
+                StandardOutputEncoding = Encoding.UTF8
             };
 
             using (Process process = Process.Start(startInfo))
