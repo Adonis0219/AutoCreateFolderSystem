@@ -47,7 +47,7 @@ public class CreateFolderToolbarButton
     {
         branchName = GitUtility.GetCurrentBranchName();
 
-        string folderName = $"1. {branchName}";
+        string folderName = branchName;
 
         GameLogger.Log("폴더 생성을 시작합니다." +
             "\nCreating folder...");
