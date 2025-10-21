@@ -23,7 +23,8 @@ public class CustomToolbarButton
 
         if (GUILayout.Button(new GUIContent("▶메인씬")))
         {
-            var pathOfMainMenuScene = "Assets/1. Scenes/MainScene.unity"; // Main Menu Scene의 경로를 정확하게 입력해주세요.
+            // TODO: 빌드 세팅에서 첫번째 씬을 불러오도록 변경
+            var pathOfMainMenuScene = "Assets/1. Scenes/1. MainScene.unity"; // Main Menu Scene의 경로를 정확하게 입력해주세요.
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(pathOfMainMenuScene);
             EditorSceneManager.playModeStartScene = sceneAsset;
             UnityEditor.EditorApplication.isPlaying = true;
