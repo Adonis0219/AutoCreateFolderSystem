@@ -148,6 +148,7 @@ public class CreateFolderToolbarButton
             string sceneFileName = Path.GetFileName(originalScenePath);
             string targetFolderPath = $"{ASSET}/{targetFolderName}/{subfolderNames[0]}/{sceneFileName}";
 
+
             if (AssetDatabase.CopyAsset(originalScenePath, targetFolderPath))
             {
                 GameLogger.Log($"씬이 성공적으로 복제되었습니다: {originalScenePath} -> {targetFolderPath}" +
@@ -160,21 +161,20 @@ public class CreateFolderToolbarButton
                 // 2. 브랜치 이름을 접미사로 추가한 새로운 이름 생성
                 string newName = $"{originalName}_{branchName}";
 
-                // 3. AssetDatabase.RenameAsset 메서드를 사용하여 파일 이름 변경
-                // (성공 시 빈 문자열, 실패 시 에러 메세지 반환)
-                string errorMessage = AssetDatabase.RenameAsset(targetFolderPath, newName);
+                // 3. 복제할 폴더에 같은 이름의 씬이 존재하는지 검사
+                if (CheckDuplicateSceneName(filter, newName, targetFolderName))
+                {
+                    GameLogger.LogError($"씬 복제에 실패했습니다. 이미 동일한 이름의 씬이 존재합니다: {newName}" +
+                    $"\nFailed to duplicate scene. A scene with the same name already exists: {newName}");
 
-                if (string.IsNullOrEmpty(errorMessage))
-                {
-                    GameLogger.Log($"씬 이름이 성공적으로 변경되었습니다: {originalName} -> {newName}" +
-                        $"\nScene renamed successfully: {originalName} -> {newName}");
+                    AssetDatabase.DeleteAsset(targetFolderPath);
+
+                    return;
                 }
-                else
-                {
-                    GameLogger.LogError($"씬 이름 변경에 실패했습니다: {originalName} -> {newName}" +
-                        $"\nFailed to rename scene: {originalName} -> {newName}");
-                    GameLogger.LogError(errorMessage);
-                }
+
+                // 4. AssetDatabase.RenameAsset 메서드를 사용하여 파일 이름 변경
+                // (성공 시 빈 문자열, 실패 시 에러 메세지 반환)
+                RenameScene(filter, newName, targetScenePath);
             }
             else
             {
@@ -183,6 +183,55 @@ public class CreateFolderToolbarButton
 
                 GameLogger.Log(targetFolderPath);
             }
+        }
+    }
+
+    /// <summary>
+    /// 씬 이름의 중복 여부를 검사하는 메서드
+    /// </summary>
+    /// <param name="filter">에셋 검색 필터</param>
+    /// <param name="newName">복제한 씬의 새 이름</param>
+    /// <param name="targetFolderName">타겟 폴더 이름</param>
+    /// <returns>중복 여부</returns>
+    static bool CheckDuplicateSceneName(string filter, string newName, string targetFolderName)
+    {
+        string[] guids = AssetDatabase.FindAssets(filter, new[] { $"{ASSET}/{targetFolderName}/{subfolderNames[0]}" });
+
+        foreach (var guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+
+            string name = Path.GetFileNameWithoutExtension(path);
+
+            if (name == newName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 복제한 씬 이름을 변경해주는 메서드
+    /// </summary>
+    /// <param name="targetFolderPath">이름을 변경할 에셋</param>
+    /// <param name="originalName">원래 이름</param>
+    /// <param name="newName">새로 설정할 이름</param>
+    static void RenameScene(string targetFolderPath, string originalName, string newName)
+    {
+        string errorMessage = AssetDatabase.RenameAsset(targetFolderPath, newName);
+
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            GameLogger.Log($"씬 이름이 성공적으로 변경되었습니다: {originalName} -> {newName}" +
+                $"\nScene renamed successfully: {originalName} -> {newName}");
+        }
+        else
+        {
+            GameLogger.LogError($"씬 이름 변경에 실패했습니다: {originalName} -> {newName}" +
+                $"\nFailed to rename scene: {originalName} -> {newName}");
+            GameLogger.LogError(errorMessage);
         }
     }
 }
