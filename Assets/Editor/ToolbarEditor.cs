@@ -14,6 +14,10 @@ namespace ToolbarEditorTest
     /// Unity 내부 Toolbar의 OnGUI를 Reflection을 통해 접근하여,
     /// 왼쪽과 오른쪽에 원하는 GUI 요소를 추가할 수 있습니다.
     /// </summary>
+    /// <remarks>
+    /// 자세한 구문 분석은
+    /// <see href="https://www.notion.so/Toolbar-Extender-293b1f49203e80d8a8e8f0fbeccea6c6?source=copy_link">3번 항목</see>을 참고하세요.
+    /// </remarks>
     [InitializeOnLoad]
     public static class ToolbarEditor
     {

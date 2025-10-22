@@ -19,6 +19,10 @@ namespace ToolbarEditorTest
     /// 원하는 콜백 함수를 연결할 수 있도록 해주는 클래스입니다.
     /// 내부적으로 UnityEditor.Toolbar 및 GUIView의 Reflection을 활용합니다.
     /// </summary>
+    /// <remarks>
+    /// 자세한 구문 분석은
+    /// <see href="https://www.notion.so/Toolbar-Extender-293b1f49203e80d8a8e8f0fbeccea6c6?source=copy_link">2번 항목</see>을 참고하세요.
+    /// </remarks>
     public static class ToolbarCallback
     {
         // UnityEditor 어셈블리에 접근해 툴바 관련 타입 정보 가져오기

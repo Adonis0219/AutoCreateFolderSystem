@@ -3,6 +3,10 @@ using System.Diagnostics;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// 구문 분석 페이지
+/// <see href="https://www.notion.so/Toolbar-Extender-293b1f49203e80d8a8e8f0fbeccea6c6?source=copy_link">1번 항목</see>을 참고하세요.
+/// </summary>
 public static class GitUtility
 {
     /// <summary>
@@ -13,13 +17,15 @@ public static class GitUtility
     {
         try
         {
+            // 1. Git 명령어를 실행하기 위한 ProcessStartInfo 설정
             ProcessStartInfo startInfo = new ProcessStartInfo("git")
             {
-                // Git 명령어 설정
+                // Git 명령어 인자 설정
                 Arguments = "rev-parse --abbrev-ref HEAD",
-                // 출력 결과를 읽기 위해 설정
+                // 표준 출력을 리다이렉션할지 여부
+                // 리다이렉션 : 출력 스트림을 다른 곳으로 보내는 것
                 RedirectStandardOutput = true,
-                // 오류 출력을 읽기 위해 설정
+                // 운영체제 셀을 통해 프로세스를 시작할지 여부 설정
                 UseShellExecute = false,
                 // 창을 표시하지 않도록 설정
                 CreateNoWindow = true,
@@ -30,12 +36,22 @@ public static class GitUtility
                 StandardOutputEncoding = Encoding.UTF8
             };
 
+
+            // 2. 'using' 블록 안에서 git 프로세스를 시작하고 실행
+            // - Process.Start : 위에서 정의한 startInfo를 사용하여 새로운 프로세스 시작
+            // - Process process : 시작된 프로세스를 나타내는 객체
+            // - using(...) : 이 블록의 실행이 끝나면 process 객체가 자동으로 Dispose(자원 해제) 됨
             using (Process process = Process.Start(startInfo))
             {
-                // 명령어 실행 결과(표준 출력) 읽기
+                // 3. 프로세스의 출력(브랜치 이름) 읽기
+                // - ReadToEnd() : 표준 출력 스트림의 끝까지 읽음
+                // - Trim() : 앞뒤의 공백 또는 줄바꿈 문자 제거
                 string branchName = process.StandardOutput.ReadToEnd().Trim();
+
+                // 4. 프로세스가 종료될 때까지 대기
                 process.WaitForExit();
 
+                // 5. 결과 검증 및 반환
                 // Git 저장소가 아니거나 오류가 발생하면 빈 문자열이 반환되는 것을 방지
                 if (string.IsNullOrEmpty(branchName))
                 {
@@ -44,6 +60,7 @@ public static class GitUtility
                 }
 
                 // refs/head/main 같은 전체 경로 대신 최종 이름만 사용하도록 처리
+                // '/' 문자가 포함된 경우 마지막 '/' 이후의 문자열만 추출
                 if (branchName.Contains("/"))
                 {
                     branchName = branchName.Substring(branchName.LastIndexOf('/') + 1);
@@ -53,6 +70,7 @@ public static class GitUtility
             }       
         }
 
+        // 예외 처리 : 프로세스 실행 중 오류가 발생한 경우
         catch (System.Exception ex)
         {
             UnityEngine.Debug.LogError($"Git 브랜치 이름을 가져오는 중 오류가 발생했습니다: {ex.Message}");
