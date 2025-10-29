@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.adonis.initialize_system": {
+      "version": "https://github.com/Adonis0219/InitializeSystem.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "aa78040c6d3e0fedc999939a12bba982a43e512b"
+    },
     "com.marijnzwemmer.unity-toolbar-extender": {
       "version": "https://github.com/marijnz/unity-toolbar-extender.git",
       "depth": 0,
