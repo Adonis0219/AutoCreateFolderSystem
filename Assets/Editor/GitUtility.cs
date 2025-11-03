@@ -17,7 +17,7 @@ public static class GitUtility
     {
         try
         {
-            // 1. Git 명령어를 실행하기 위한 ProcessStartInfo 설정
+            // Git 명령어를 실행하기 위한 ProcessStartInfo 설정
             ProcessStartInfo startInfo = new ProcessStartInfo("git")
             {
                 // Git 명령어 인자 설정
@@ -36,22 +36,12 @@ public static class GitUtility
                 StandardOutputEncoding = Encoding.UTF8
             };
 
-
-            // 2. 'using' 블록 안에서 git 프로세스를 시작하고 실행
-            // - Process.Start : 위에서 정의한 startInfo를 사용하여 새로운 프로세스 시작
-            // - Process process : 시작된 프로세스를 나타내는 객체
-            // - using(...) : 이 블록의 실행이 끝나면 process 객체가 자동으로 Dispose(자원 해제) 됨
             using (Process process = Process.Start(startInfo))
             {
-                // 3. 프로세스의 출력(브랜치 이름) 읽기
-                // - ReadToEnd() : 표준 출력 스트림의 끝까지 읽음
-                // - Trim() : 앞뒤의 공백 또는 줄바꿈 문자 제거
+                // 명령어 실행 결과(표준 출력) 읽기
                 string branchName = process.StandardOutput.ReadToEnd().Trim();
-
-                // 4. 프로세스가 종료될 때까지 대기
                 process.WaitForExit();
 
-                // 5. 결과 검증 및 반환
                 // Git 저장소가 아니거나 오류가 발생하면 빈 문자열이 반환되는 것을 방지
                 if (string.IsNullOrEmpty(branchName))
                 {
@@ -60,7 +50,6 @@ public static class GitUtility
                 }
 
                 // refs/head/main 같은 전체 경로 대신 최종 이름만 사용하도록 처리
-                // '/' 문자가 포함된 경우 마지막 '/' 이후의 문자열만 추출
                 if (branchName.Contains("/"))
                 {
                     branchName = branchName.Substring(branchName.LastIndexOf('/') + 1);
@@ -70,7 +59,6 @@ public static class GitUtility
             }       
         }
 
-        // 예외 처리 : 프로세스 실행 중 오류가 발생한 경우
         catch (System.Exception ex)
         {
             UnityEngine.Debug.LogError($"Git 브랜치 이름을 가져오는 중 오류가 발생했습니다: {ex.Message}");
